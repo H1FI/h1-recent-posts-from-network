@@ -59,10 +59,12 @@
                 $orig_blogurl = ((get_option('home'))?get_option('home'):get_option('siteurl'));
                 $mapped_blogurl = count( $domains ) > 0 ? $domains[0] : $orig_blogurl;
 
-
+                $thumbnail = get_the_post_thumbnail( $post->ID, 'medium', array( 'class'=>'hrpn-alignleft hrpn-thumb' ) );
+                
                 $essential_post_data = array(
                     'title'         =>  $post->post_title,
                     'permalink'     =>  str_replace( $orig_blogurl, $mapped_blogurl, get_the_permalink( $post->ID ) ),
+                    'thumbnail'     =>  $thumbnail,
                 );
 
                 $current_recent_posts = get_site_option( 'network_latest_posts' );
@@ -105,7 +107,7 @@
         function HerculesRecentPostsFromNetworkWidget() 
         {
             // Instantiate the parent object
-            parent::__construct( false, 'Recent Posts from the Network', array( 'description' => 'A widget that shows the most recent 30 posts from the entire network' ) );
+            parent::__construct( false, 'Hercules Recent Posts from the Network', array( 'description' => 'A widget that shows the most recent posts from the entire network' ) );
         }
     
         /**
@@ -122,6 +124,8 @@
                 $widget_args = array( ‘number’ => $widget_args );
             $widget_args = wp_parse_args( $widget_args, array( ‘number’ => -1 ) );
             extract( $widget_args, EXTR_SKIP );
+            
+            $instance = wp_parse_args( (array) $instance, self::get_defaults() );
 
             $latest_posts = get_site_option( 'network_latest_posts' );
             
@@ -130,24 +134,36 @@
                 $latest_posts = array();
             }
             
+            $new_tab = $instance['new-tab'] != false ? ' target="_blank" ' : '';
+            
             echo $before_widget;
             echo $before_title;
-            echo 'Recent Posts from the Network';
+            echo $instance['title'];
             echo $after_title;
             echo '<div class="hrpn-block">';
             echo '<ul class="hrpn-ul">';
             $counter = 1;
+            
+            $max_items = !empty( $instance['limit'] ) ? $instance['limit'] : 5;
+            
             if( count( $latest_posts ) > 0 )
             {
                 foreach( $latest_posts as $key=>$val )
                 {
-                    if( !empty( $val['permalink']) && !empty( $val['title'] ) && $counter <= 30 )
+                    if( !empty( $val['permalink']) && !empty( $val['title'] ) && $counter <= $max_items )
                     {
                         $counter++;
                         echo '<li class="hrpn-li hrpn-clearfix">';
+                        
                         echo '<h3 class="hrpn-title">';
-                        echo '<a target="_blank" href="' . $val['permalink'] . '" title="' . $val['title'] . '">' . $val['title'] . '</a>';
+                        echo '<a ' . $new_tab . ' href="' . $val['permalink'] . '" title="' . $val['title'] . '">' . $val['title'] . '</a>';
                         echo '</h3>';
+                        
+                        if( !empty( $val['thumbnail'] ) && $instance['thumb'] != false )
+                        {
+                            echo '<a ' . $new_tab . ' href="' . $val['permalink'] . '" title="' . $val['title'] . '">' . $val['thumbnail'] . '</a>';
+                        }
+                        
                         echo '</li>';
                     }
                 }
@@ -173,7 +189,14 @@
          */
         function update( $new_instance, $old_instance ) 
         {
-            // Save widget options
+            $instance = $old_instance;
+
+            $instance['title']            = strip_tags( $new_instance['title'] );
+            $instance['limit']            = (int)( $new_instance['limit'] );
+            $instance['thumb']            = isset( $new_instance['thumb'] )     ? (bool) $new_instance['thumb'] : false;
+            $instance['new-tab']          = isset( $new_instance['new-tab'] )   ? (bool) $new_instance['new-tab'] : false;
+
+            return $instance;
         }
     
         /**
@@ -183,7 +206,63 @@
          */
         function form( $instance ) 
         {
-            // Output admin widget options form
+            $instance = wp_parse_args( (array) $instance, self::get_defaults() );
+
+            $id_prefix = $this->get_field_id('');
+            ?>
+            <div class="">
+
+                <p>
+                    <label for="<?php echo $this->get_field_id( 'title' ); ?>">
+                        Title
+                    </label>
+                    <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
+                </p>
+
+                <p>
+                    <label for="<?php echo $this->get_field_id( 'limit' ); ?>">
+                        Number of posts to show
+                    </label>
+                    <input class="widefat" id="<?php echo $this->get_field_id( 'limit' ); ?>" name="<?php echo $this->get_field_name( 'limit' ); ?>" type="number" step="1" min="0" max="50" value="<?php echo (int)( $instance['limit'] ); ?>" />
+                </p>
+
+                <?php if ( current_theme_supports( 'post-thumbnails' ) ) { ?>
+
+                    <p>
+                        <input id="<?php echo $this->get_field_id( 'thumb' ); ?>" name="<?php echo $this->get_field_name( 'thumb' ); ?>" type="checkbox" <?php checked( $instance['thumb'] ); ?> />
+                        <label class="input-checkbox" for="<?php echo $this->get_field_id( 'thumb' ); ?>">
+                            Display Thumbnail
+                        </label>
+                    </p>
+
+                <?php } ?>
+                
+                <p>
+                        <input id="<?php echo $this->get_field_id( 'new-tab' ); ?>" name="<?php echo $this->get_field_name( 'new-tab' ); ?>" type="checkbox" <?php checked( $instance['new-tab'] ); ?> />
+                        <label class="input-checkbox" for="<?php echo $this->get_field_id( 'new-tab' ); ?>">
+                            Open in new tab
+                        </label>
+                    </p>
+
+            </div>
+            <?php
+        }
+
+        /**
+         * Render an array of default values.
+         *
+         * @return array default values
+         */
+        private static function get_defaults() {
+
+            $defaults = array(
+                'title'     => 'Recent Posts from the Network',
+                'limit'     => 5,
+                'thumb'     => true,
+                'new-tab'   => true,
+            );
+
+            return $defaults;
         }
     }
     

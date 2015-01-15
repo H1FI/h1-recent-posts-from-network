@@ -1,53 +1,48 @@
-=== Herc Recent Posts from Network ===
+=== Hercules Recent Posts from Network ===
 Contributors: toddnestor
-Tags: spam, recaptcha, captcha, comments
+Tags: recent posts, posts, network
 Requires at least: 3.0.1
 Tested up to: 4.0
 Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Hercules Recaptcha adds a Recaptcha to the comment form for non-logged in users.  It uses the latest Recaptcha API.
+Hercules Recent Posts from Network creates a widget that displays the recent posts from the entire network.
 
 == Description ==
 
-Hercules Recaptcha uses the latest Google Recaptcha API to more accurately determine if users are bots or not.
-If the user is not logged in it will display a Recaptcha for the user to fill out in the comment form.  If the user
-disables javascript and is not logged in then comments will fail to submit.
+First of all, this plugin is for a Wordpress Multisite setup.  The user has the option to display thumbnails or not, and for how many posts they want to display.
 
-In a future version options for which forms to use this on will be provided, currently it only works with the comment forms.
+This widget works differently than other widgets that display recent posts from an entire network.  A network that has lots of blogs (like several hundred, or even several thousand) can take a long time to query each blog and compare the times for the most recent posts.
 
-Also in a future version support for multisite will be added with default keys that are used for sites that don't have
-mapped domains, and options for the users to add their own Recaptcha keys if they are using a mapped domain.
+If you are using some sort of database sharding it will take even more time.  This plugin works much more simply, as posts are published on the network they are pushed to a network option that contains an array of the most recent posts from the network.
+
+At first this array will be empty, so it might be a bit until the widget has a full list (up to the maximum set by the user in the widget) of recent posts.  Since we are adding posts to the list at the time of publishing this also makes it easy to push the thumbnail to it also, which is why this
+widget can show thumbnails when lots of other ones can't.
+
+In a future version we will allow the network admin to limit the people who can use this widget to super admin users.  A future option will also allow network options for blogs to ignore (at a network level), blog owners will be able to opt out of having their blog's posts included, or the network admin will be able to explicitly list blogs that get included.
 
 == Installation ==
 
 Add this plugin by uploading the zip using the "Add Plugin" feature built into Wordpress.  Otherwise manaully unzip the folder
-and upload the entire directory to your blog's plugins folder ( /wp-content/plugins/ ).  Next you have to activate the plugin.
+and upload the entire directory to your blog's plugins folder ( /wp-content/plugins/ ).  For this plugin to work effectively it must be network activated.  If it is not network activated then it can only get the recent posts from blogs that have activated the plugin.
 
-Lastly, to make it work you need to go to the Hercules Recaptcha settings page (a submenu of "Settings") and add your
-site key and and secret key.  If you don't have these yet you need to go to https://www.google.com/recaptcha/ to register your site
-and get keys.
+Next you should go to the Widgets page and add it to the appropriate sidebar.
 
 == Frequently Asked Questions ==
 
-= Why isn't my Recaptcha rendering? =
+= Why aren't any posts showing? =
 
-First of all make sure you are not logged into Wordpress and that you are viewing a post that has comments enabled.
-If the Recaptcha isn't displaying then you may have not set your Recaptcha keys yet.  If it is displaying an error
-message then you are using invalid keys (ones not associated with the domain that your blog is on) or there is some
-sort of error in the keys (like an extra space in them).
+The way this plugin works so efficiently is by pushing posts to the list as they are published.  Only posts that are published after the plugin is activated will be pushed to the list.  It may take some time for the list to fill up depending on how busy your network is.
 
-= Where do I get Recaptcha keys? =
+= Where can I see the widget? =
 
-If you don't have these yet you need to go to https://www.google.com/recaptcha/ to register your site
-and get keys.
+The widget will show up in the list of available widgets on the Widgets page.  You can drag it over to the sidebar you want the widget to appear in.
 
 == Screenshots ==
 
-1. This is how the Recaptcha looks in a form on a real Wordpress theme.
-2. This is what users see when they press the "I'm not a robot" checkbox.
-3. This is the settings page where you set the Recaptcha keys.
+1. This is the widget in action with thumbnails enabled
+2. This is what users see when they add the widget to a sidebar.
 
 == Changelog ==
 
