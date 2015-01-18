@@ -3,7 +3,7 @@
     Plugin Name: Herc Recent Posts from Network
     Description: Displays recent posts from a network without slowing down the page load.
     Author: Todd D. Nestor - todd.nestor@gmail.com
-    Version: 1.0
+    Version: 1.1
     License: GNU General Public License v3 or later
     License URI: http://www.gnu.org/licenses/gpl-3.0.html
     */
@@ -25,8 +25,12 @@
         {
 
             add_action( 'publish_post', array( $this, 'AddPosttoHerculesRecentPostsFromNetwork' ) );
-
             add_action( 'widgets_init', array( $this, 'RegisterHerculesRecentPostsFromNetworkWidget' ) );
+            
+            $first_post = get_site_option( 'first_post' );
+            $first_post = str_replace( "SITE_URL", esc_url( network_home_url() ), $first_post );
+            $first_post = str_replace( "SITE_NAME", get_current_site()->site_name, $first_post );
+            $this->first_post = $first_post;
         }
 
         /**
@@ -44,7 +48,7 @@
             if( $post->post_title == 'Auto Draft' )
                 return;
 
-            if( !get_post_meta($post->ID, 'published_once', true ) )
+            if( !get_post_meta($post->ID, 'published_once', true ) && ( $post->ID != 1 || strpos( $post->content, $this->first_post ) === false ) )
             {
                 global $wpdb;
 

@@ -1,9 +1,9 @@
 === Hercules Recent Posts from Network ===
 Contributors: toddnestor
-Tags: recent posts, posts, network
+Tags: recent posts, posts, network, hercules
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.0
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,3 +46,5 @@ The widget will show up in the list of available widgets on the Widgets page.  Y
 
 == Changelog ==
 
+= Version 1.1
+* The default initial post (the "Hello Wolrd" one) will not be added to the widget when the site is created, but will be if the user edits the content of that post instead of deleting it.
