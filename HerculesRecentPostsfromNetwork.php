@@ -17,13 +17,11 @@
      */
     class HerculesRecentPostsFromNetwork
     {
-
         /**
          * The Constructor function adds the function that pushes published posts to the list, as well as registers the widget.
          */
         function __construct()
         {
-
             add_action( 'publish_post', array( $this, 'AddPosttoHerculesRecentPostsFromNetwork' ) );
             add_action( 'widgets_init', array( $this, 'RegisterHerculesRecentPostsFromNetworkWidget' ) );
             
@@ -103,8 +101,7 @@
      * This widget has no options, so it is really just registering the widget and constructing how it displays.
      */
     class HerculesRecentPostsFromNetworkWidget extends WP_Widget 
-    {
-    
+    {    
         /**
          * This is how we start a new widget, it builds the parent object.
          */
@@ -157,8 +154,7 @@
                     if( !empty( $val['permalink']) && !empty( $val['title'] ) && $counter <= $max_items )
                     {
                         $counter++;
-                        echo '<li class="hrpn-li hrpn-clearfix">';
-                        
+                        echo '<li class="hrpn-li hrpn-clearfix">';                        
                         echo '<h3 class="hrpn-title">';
                         echo '<a ' . $new_tab . ' href="' . $val['permalink'] . '" title="' . $val['title'] . '">' . $val['title'] . '</a>';
                         echo '</h3>';
@@ -176,7 +172,7 @@
             {
                 echo '<li class="hrpn-li hrpn-clearfix">';
                 echo '<h3 class="hrpn-title">';
-                    echo 'No posts to display.';
+                echo 'No posts to display.';
                 echo '</h3>';
                 echo '</li>';
             }
@@ -211,18 +207,15 @@
         function form( $instance ) 
         {
             $instance = wp_parse_args( (array) $instance, self::get_defaults() );
-
             $id_prefix = $this->get_field_id('');
             ?>
-            <div class="">
-
+            <div>
                 <p>
                     <label for="<?php echo $this->get_field_id( 'title' ); ?>">
                         Title
                     </label>
                     <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $instance['title'] ); ?>" />
                 </p>
-
                 <p>
                     <label for="<?php echo $this->get_field_id( 'limit' ); ?>">
                         Number of posts to show
@@ -231,7 +224,6 @@
                 </p>
 
                 <?php if ( current_theme_supports( 'post-thumbnails' ) ) { ?>
-
                     <p>
                         <input id="<?php echo $this->get_field_id( 'thumb' ); ?>" name="<?php echo $this->get_field_name( 'thumb' ); ?>" type="checkbox" <?php checked( $instance['thumb'] ); ?> />
                         <label class="input-checkbox" for="<?php echo $this->get_field_id( 'thumb' ); ?>">
@@ -239,16 +231,14 @@
                         </label>
                     </p>
 
-                <?php } ?>
-                
-                <p>
+                <?php } ?>                
+                    <p>
                         <input id="<?php echo $this->get_field_id( 'new-tab' ); ?>" name="<?php echo $this->get_field_name( 'new-tab' ); ?>" type="checkbox" <?php checked( $instance['new-tab'] ); ?> />
                         <label class="input-checkbox" for="<?php echo $this->get_field_id( 'new-tab' ); ?>">
                             Open in new tab
                         </label>
                     </p>
-
-            </div>
+                </div>
             <?php
         }
 
