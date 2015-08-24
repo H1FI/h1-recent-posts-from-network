@@ -56,6 +56,11 @@
 
                 $domains = array();
                 $blog_id = get_current_blog_id();
+
+                // Ignore main site posts
+                if ( $blog_id = BLOG_ID_CURRENT_SITE )
+                    return;
+
                 $rows = $wpdb->get_results( "SELECT * FROM {$wpdb->dmtable} WHERE `blog_id`=$blog_id ORDER BY id DESC LIMIT 0,1" );
                 foreach( $rows as $key=>$val )
                 {
