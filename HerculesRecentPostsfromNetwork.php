@@ -71,6 +71,7 @@
                     'title'         =>  $post->post_title,
                     'permalink'     =>  str_replace( $orig_blogurl, $mapped_blogurl, get_the_permalink( $post->ID ) ),
                     'thumbnail'     =>  $thumbnail,
+                    'date'          =>  $post->post_date
                 );
 
                 $current_recent_posts = get_site_option( 'network_latest_posts' );
@@ -163,6 +164,10 @@
                         
                         echo '<h3 class="hrpn-title">';
                         echo '<a ' . $new_tab . ' href="' . $val['permalink'] . '" title="' . $val['title'] . '">' . $val['title'] . '</a>';
+
+                        if ( !empty( $val['date'] ) ) {
+                            echo ' <span class="hrpn-date">('.  date( __( 'j.n.Y', 'hrpn' ), strtotime( $val['date'] ) ) . ')</span>';
+                        }
                         echo '</h3>';
                         
                         if( !empty( $val['thumbnail'] ) && $instance['thumb'] != false )
@@ -178,7 +183,7 @@
             {
                 echo '<li class="hrpn-li hrpn-clearfix">';
                 echo '<h3 class="hrpn-title">';
-                    echo 'No posts to display.';
+                    echo __( 'No posts to display.' , 'hrpn' );
                 echo '</h3>';
                 echo '</li>';
             }
