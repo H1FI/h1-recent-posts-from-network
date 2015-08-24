@@ -1,21 +1,21 @@
 <?php
     /*
-    Plugin Name: Herc Recent Posts from Network
-    Description: Displays recent posts from a network without slowing down the page load.
-    Author: Todd D. Nestor - todd.nestor@gmail.com
-    Version: 1.1
+    Plugin Name: H1 Recent Posts from Network
+    Description: Displays recent posts from a network without slowing down the page load. Forked from Hercules Recent Posts from Network
+    Author: Todd D. Nestor - todd.nestor@gmail.com, Daniel Koskinen / H1
+    Version: 1.0
     License: GNU General Public License v3 or later
     License URI: http://www.gnu.org/licenses/gpl-3.0.html
     */
     
     /**
-     * Class HerculesRecentPostsFromNetwork creates a widget that displays the 20 mos recent posts from the network.
+     * Class H1_Recent_Posts_From_Network creates a widget that displays the 20 mos recent posts from the network.
      *
      * This widget does not search for the most recent posts, but instead any time someone on the network
      * publishes a post, that post is added to the beginning of a list (a list that gets cutoff after 20 entries)
      * that is used to populate this widget.  Posts are only added when they are first published.
      */
-    class HerculesRecentPostsFromNetwork
+    class H1_Recent_Posts_From_Network
     {
 
         /**
@@ -24,8 +24,10 @@
         function __construct()
         {
 
-            add_action( 'publish_post', array( $this, 'AddPosttoHerculesRecentPostsFromNetwork' ) );
-            add_action( 'widgets_init', array( $this, 'RegisterHerculesRecentPostsFromNetworkWidget' ) );
+            load_plugin_textdomain( 'hrpn', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+
+            add_action( 'publish_post', array( $this, 'Add_Post_To_H1_Recent_Posts_From_Network' ) );
+            add_action( 'widgets_init', array( $this, 'Register_H1_Recent_Posts_From_Network_Widget' ) );
             
             $first_post = get_site_option( 'first_post' );
             $first_post = str_replace( "SITE_URL", esc_url( network_home_url() ), $first_post );
@@ -41,11 +43,11 @@
          * That is, if you update the post it will not come back on to the list, nor would it move to the front if it was
          * already on the list.
          */
-        function AddPosttoHerculesRecentPostsFromNetwork()
+        function Add_Post_To_H1_Recent_Posts_From_Network()
         {
             global $post;
 
-            if( $post->post_title == 'Auto Draft' )
+            if( $post->post_title == __( 'Auto Draft' ) )
                 return;
 
             if( !get_post_meta($post->ID, 'published_once', true ) && ( $post->ID != 1 || strpos( $post->content, $this->first_post ) === false ) )
@@ -87,31 +89,31 @@
         /**
          * This function registers the Network Recent Posts widget that is in a different class.
          */
-        function RegisterHerculesRecentPostsFromNetworkWidget()
+        function Register_H1_Recent_Posts_From_Network_Widget()
         {
             if( is_super_admin() || !is_admin() )
-                register_widget( 'HerculesRecentPostsFromNetworkWidget' );
+                register_widget( 'H1_Recent_Posts_From_Network_Widget' );
         }
 
     }
     
-    $hercules_recent_network_posts = new HerculesRecentPostsFromNetwork;
+    $hercules_recent_network_posts = new H1_Recent_Posts_From_Network;
 
     /**
-     * Class HerculesRecentPostsFromNetworkWidget builds the widget and all the necessary functions for it.
+     * Class H1_Recent_Posts_From_Network_Widget builds the widget and all the necessary functions for it.
      *
      * This widget has no options, so it is really just registering the widget and constructing how it displays.
      */
-    class HerculesRecentPostsFromNetworkWidget extends WP_Widget 
+    class H1_Recent_Posts_From_Network_Widget extends WP_Widget
     {
     
         /**
          * This is how we start a new widget, it builds the parent object.
          */
-        function HerculesRecentPostsFromNetworkWidget() 
+        function H1_Recent_Posts_From_Network_Widget()
         {
             // Instantiate the parent object
-            parent::__construct( false, 'Hercules Recent Posts from the Network', array( 'description' => 'A widget that shows the most recent posts from the entire network' ) );
+            parent::__construct( false, 'H1 Recent Posts from the Network', array( 'description' => __( 'A widget that shows the most recent posts from the entire network', 'hrpn' ) ) );
         }
     
         /**
